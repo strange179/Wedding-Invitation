@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sarah & Ahmed | Wedding Invitation</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Google Fonts (English & Arabic) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'page-bg': '#F9F8F6',
+                        // Elegant Green Envelope Colors
+                        'env-inside': '#748A76', // Darkest green for the inside depth
+                        'env-base': '#8C9E8A',   // Left and right flaps
+                        'env-bottom': '#94A692', // Bottom flap (slightly lighter to show overlap)
+                        'env-top': '#9FAD9D',    // Top flap (lightest as it catches light)
+                        'wedding-gold': '#CBA36A',
+                        'wedding-green': '#8C9E8A', // To tie the main page with the envelope
+                        'wedding-dark': '#2C352D',
+                        'wedding-text': '#5A6359',
+                        'wax-red': '#8C1C13', // Deep Crimson/Burgundy Red
+                        'wax-light': '#B22B22'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        arabic: ['Amiri', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Styles */
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: #F9F8F6;
+            -webkit-tap-highlight-color: transparent;
+            scroll-behavior: smooth;
+        }
+
+        /* Lock scrolling initially until envelope opens */
+        body.locked {
+            overflow: hidden;
+            height: 100dvh;
+        }
+
+        /* --- Full Screen Envelope Styles --- */
+        #envelope-screen {
+            perspective: 1500px;
+            background-color: #000000; 
+        }
+
+        .envelope-container {
+            width: 100%;
+            height: 100dvh; 
+            position: relative;
+            transform-style: preserve-3d;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* --- Flaps Geometry and Paper Look --- */
+        .flap {
+            position: absolute;
+            inset: 0;
+        }
+
+        /* Left Flap */
+        .flap-left {
+            background-color: #8C9E8A; 
+            clip-path: polygon(0 0, 52% 50%, 0 100%);
+            z-index: 10;
+            box-shadow: inset -5px 0 20px rgba(0,0,0,0.06);
+        }
+
+        /* Right Flap */
+        .flap-right {
+            background-color: #8C9E8A; 
+            clip-path: polygon(100% 0, 48% 50%, 100% 100%);
+            z-index: 11;
+            box-shadow: inset 5px 0 20px rgba(0,0,0,0.06);
+        }
+
+        /* Bottom Flap */
+        .flap-bottom {
+            background-color: #94A692; 
+            clip-path: polygon(0 100%, 50% 48%, 100% 100%);
+            z-index: 12;
+            filter: drop-shadow(0 -5px 10px rgba(0,0,0,0.15));
+            box-shadow: inset 0 2px 2px rgba(255,255,255,0.1);
+        }
+
+        /* Top Flap (The one that opens) */
+        .flap-top {
+            background-color: #9FAD9D; 
+            clip-path: polygon(0 0, 100% 0, 50% 52%);
+            z-index: 30;
+            transform-origin: top;
+            transform-style: preserve-3d;
+            /* Very slow, elegant transition for the "hint" of opening */
+            transition: transform 2.5s cubic-bezier(0.25, 1, 0.5, 1), filter 2.5s ease;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.25));
+        }
+
+        /* Realistic Embossing Effect on the Green Paper */
+        .embossed {
+            color: transparent; 
+            filter: 
+                drop-shadow( 1.5px  1.5px 0px rgba(255, 255, 255, 0.25)) 
+                drop-shadow(-1px -1px 0px rgba(0, 0, 0, 0.25));
+            opacity: 0.7;
+        }
+
+        /* Realistic Red Wax Seal */
+        .wax-seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 95px;
+            height: 95px;
+            background: radial-gradient(circle at 35% 35%, #B22B22, #8C1C13, #5A0A05);
+            border-radius: 47% 53% 51% 49% / 51% 47% 53% 49%; 
+            box-shadow: 
+                0 10px 20px rgba(0,0,0,0.3), 
+                inset 0 3px 5px rgba(255,255,255,0.3), 
+                inset 0 -3px 8px rgba(0,0,0,0.5); 
+            z-index: 40;
+            cursor: pointer;
+            transition: all 1.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wax-seal::after {
+            content: '';
+            position: absolute;
+            inset: 7px;
+            border-radius: 50% 49% 51% 50% / 49% 51% 48% 52%;
+            background: radial-gradient(circle at center, #8C1C13, #72140D);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4), 0 1px 1px rgba(255,255,255,0.2);
+        }
+
+        .wax-seal-text {
+            position: relative;
+            z-index: 2;
+            color: #E8C88A; 
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 500;
+            text-shadow: 
+                -1px -1px 0px rgba(0,0,0,0.5), 
+                1px 1px 0px rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            margin-top: 2px;
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.03); }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s infinite ease-in-out;
+        }
+
+        /* --- Main Page Entrance Animation --- */
+        #main-content {
+            opacity: 0;
+            transform: scale(0.92) translateY(30px);
+            transition: all 2.5s cubic-bezier(0.4, 0, 0, 1);
+            pointer-events: none;
+        }
+
+        #main-content.visible {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        .reveal-up {
+            opacity: 0;
+            transform: translateY(35px);
+            transition: all 1s ease-out;
+        }
+        .reveal-up.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body class="locked antialiased text-wedding-dark selection:bg-wedding-green selection:text-white">
+
+    <!-- ================= ENVELOPE SCREEN ================= -->
+    <div id="envelope-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-colors duration-[2.5s]">
+        
+        <div id="envelope-container" class="envelope-container bg-env-inside">
+            
+            <!-- Inside back of the envelope -->
+            <div class="absolute inset-0 bg-env-inside flex flex-col items-center justify-start pt-16">
+                <div class="w-[85%] h-[80%] bg-[#FDFBF7] rounded-md shadow-inner border border-white/40 opacity-70 flex flex-col items-center pt-8">
+                    <div class="w-12 h-[1px] bg-wedding-gold mb-2"></div>
+                    <div class="w-8 h-[1px] bg-wedding-gold"></div>
+                </div>
+            </div>
+
+            <!-- Flaps -->
+            <div class="flap flap-left">
+                <i data-lucide="leaf" class="absolute top-1/4 left-6 w-14 h-14 embossed transform -rotate-12 stroke-[1.5]"></i>
+                <i data-lucide="flower-2" class="absolute bottom-1/3 left-10 w-10 h-10 embossed transform rotate-45 stroke-[1.5]"></i>
+            </div>
+            
+            <div class="flap flap-right">
+                <i data-lucide="flower" class="absolute top-1/3 right-8 w-16 h-16 embossed transform rotate-90 stroke-[1.5]"></i>
+                <i data-lucide="sparkles" class="absolute bottom-1/4 right-6 w-12 h-12 embossed transform -rotate-12 stroke-[1.5]"></i>
+            </div>
+            
+            <div class="flap flap-bottom flex flex-col items-center justify-end pb-16">
+                <p class="font-arabic text-4xl font-bold embossed mb-4 tracking-wider text-transparent">دعوة زفاف</p>
+                <i data-lucide="heart" class="w-8 h-8 embossed stroke-[1.5]"></i>
+            </div>
+
+            <!-- Top Flap (The one that opens) -->
+            <div id="flap-top" class="flap flap-top">
+                <i data-lucide="flower-2" class="absolute top-14 left-1/2 -translate-x-1/2 w-12 h-12 embossed rotate-180 stroke-[1.5]"></i>
+            </div>
+
+            <!-- Red Wax Seal -->
+            <div id="wax-seal" class="wax-seal animate-pulse-slow" onclick="openEnvelope()">
+                <div class="wax-seal-text">S<span class="text-[1.3rem] mx-1 font-light italic text-[#E8C88A]/80">&</span>A</div>
+            </div>
+
+            <!-- Hint text -->
+            <div id="hint-text" class="absolute bottom-8 left-0 right-0 text-center z-40 transition-opacity duration-700 pointer-events-none">
+                <p class="font-sans text-[11px] tracking-[0.25em] text-white/70 uppercase drop-shadow-md">Tap seal to open</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MAIN INVITATION PAGE ================= -->
+    <main id="main-content" class="relative min-h-screen pb-24 bg-page-bg">
+        
+        <!-- Hero Section -->
+        <section class="relative h-[85dvh] w-full flex flex-col items-center justify-center overflow-hidden bg-white rounded-b-[40px] shadow-sm">
+            <div class="absolute inset-0 w-full h-full">
+                <img src="https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                     alt="Couple" 
+                     class="w-full h-full object-cover opacity-[0.55] mix-blend-multiply" />
+                <div class="absolute inset-0 bg-gradient-to-b from-page-bg/30 via-page-bg/60 to-page-bg"></div>
+            </div>
+
+            <div class="relative z-10 text-center px-6 mt-16">
+                <p class="font-arabic text-2xl md:text-3xl text-wedding-green mb-8 drop-shadow-sm font-bold">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</p>
+                <p class="font-sans text-[11px] tracking-[0.3em] uppercase text-wedding-text mb-5">Together with their families</p>
+                
+                <h1 class="font-serif text-6xl md:text-7xl font-medium text-wedding-dark mb-4 leading-tight">
+                    Sarah <br/>
+                    <span class="text-wedding-green font-light italic text-4xl block my-2">&</span> 
+                    Ahmed
+                </h1>
+                
+                <p class="font-arabic text-xl md:text-2xl text-wedding-text mt-10">نتشرف بدعوتكم لحضور حفل زفافنا</p>
+            </div>
+        </section>
+
+        <!-- Event Details Card -->
+        <section class="relative -mt-20 z-20 px-5 max-w-md mx-auto reveal-up">
+            <div class="bg-white rounded-[32px] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-wedding-green/20 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-wedding-green/10 via-wedding-green/60 to-wedding-green/10"></div>
+
+                <div class="flex items-center justify-center gap-4 mb-8 mt-2">
+                    <div class="h-[1px] bg-wedding-green/30 flex-1"></div>
+                    <i data-lucide="calendar-heart" class="text-wedding-green w-5 h-5"></i>
+                    <div class="h-[1px] bg-wedding-green/30 flex-1"></div>
+                </div>
+
+                <div class="space-y-8 font-serif">
+                    <div>
+                        <p class="text-[10px] font-sans tracking-[0.25em] text-wedding-green uppercase mb-3">The Date</p>
+                        <p class="text-[22px] text-wedding-dark">Friday, October 25th, 2026</p>
+                        <p class="font-arabic text-xl text-wedding-text mt-1.5">الجمعة، ٢٥ أكتوبر ٢٠٢٦</p>
+                    </div>
+
+                    <div class="w-10 h-[1px] bg-wedding-green/20 mx-auto"></div>
+
+                    <div>
+                        <p class="text-[10px] font-sans tracking-[0.25em] text-wedding-green uppercase mb-3">The Time</p>
+                        <p class="text-[22px] text-wedding-dark">8:00 PM</p>
+                        <p class="font-arabic text-xl text-wedding-text mt-1.5">الثامنة مساءً</p>
+                    </div>
+
+                    <div class="w-10 h-[1px] bg-wedding-green/20 mx-auto"></div>
+
+                    <div>
+                        <p class="text-[10px] font-sans tracking-[0.25em] text-wedding-green uppercase mb-3">The Venue</p>
+                        <p class="text-[20px] text-wedding-dark">The Grand Palace Hotel</p>
+                        <p class="font-sans text-[13px] text-wedding-text mt-2 uppercase tracking-widest">Downtown, Cairo</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Location Map Section -->
+        <section class="px-5 max-w-md mx-auto mt-14 reveal-up">
+            <div class="bg-white rounded-[28px] p-2 shadow-sm border border-wedding-green/10">
+                <div class="aspect-video bg-[#EEF0ED] rounded-[22px] relative overflow-hidden flex items-center justify-center mb-2 group cursor-pointer" onclick="window.open('https://maps.google.com', '_blank')">
+                    <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                         alt="Map Location" 
+                         class="absolute inset-0 w-full h-full object-cover opacity-60 transition-transform duration-1000 group-hover:scale-110" />
+                    <div class="absolute inset-0 bg-wedding-green/20 group-hover:bg-wedding-green/0 transition-colors duration-700"></div>
+                    <div class="relative z-10 bg-white p-3.5 rounded-full shadow-lg text-wedding-green animate-bounce">
+                        <i data-lucide="map-pin" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                
+                <button onclick="window.open('https://maps.google.com', '_blank')" class="w-full py-4 text-wedding-dark font-sans text-xs tracking-[0.2em] uppercase flex items-center justify-center gap-2 hover:text-wedding-green transition-colors">
+                Open in Google Maps
+                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer Copyright -->
+    <footer class="mt-20 text-center text-wedding-text/70 reveal-up flex flex-col items-center justify-center">
+        <div class="flex items-center justify-center gap-3 mb-3">
+            <div class="h-[1px] w-12 bg-wedding-green/20"></div>
+            <i data-lucide="heart" class="w-3.5 h-3.5 text-wedding-green/50 fill-wedding-green/10"></i>
+            <div class="h-[1px] w-12 bg-wedding-green/20"></div>
+        </div>
+        <p class="font-arabic text-[15px] tracking-wide">
+            جميع الحقوق محفوظة &copy; 2026 
+            <span class="text-wedding-green font-bold mx-1">مُهتم</span>
+        </p>
+    </footer>
+</main>
+
+<script>
+    // Initialize Icons
+        lucide.createIcons();
+
+        // Slow, elegant opening logic
+        function openEnvelope() {
+            const screen = document.getElementById('envelope-screen');
+            const seal = document.getElementById('wax-seal');
+            const hintText = document.getElementById('hint-text');
+            const mainContent = document.getElementById('main-content');
+            const flapTop = document.getElementById('flap-top'); 
+            
+            // Prevent multiple clicks
+            seal.style.pointerEvents = 'none';
+
+            // 1. Hide hint text & stop pulse
+            hintText.style.opacity = '0';
+            seal.classList.remove('animate-pulse-slow');
+
+            // 2. Slow disappearance of the seal
+            seal.style.transition = 'all 1.5s ease';
+            seal.style.transform = 'translate(-50%, -50%) scale(1.1)';
+            seal.style.opacity = '0';
+
+            // 3. Subtle hint of opening (lift flap slightly)
+            setTimeout(() => {
+                // Just a 35-degree lift + small translation to show depth without opening fully
+                flapTop.style.transform = 'rotateX(35deg) translateY(-3px)';
+                flapTop.style.filter = 'drop-shadow(0 15px 25px rgba(0,0,0,0.4)) brightness(1.05)';
+            }, 800); 
+
+            // 4. Very slow fade out of the whole envelope while the flap is slightly lifted
+            setTimeout(() => {
+                screen.style.transition = 'opacity 2.5s ease-in-out';
+                screen.style.opacity = '0';
+                
+                // Show the main page
+                mainContent.classList.add('visible');
+                
+                // Allow user to scroll
+                document.body.classList.remove('locked');
+            }, 2200);
+
+            // 5. Remove from DOM completely
+            setTimeout(() => {
+                screen.style.display = 'none';
+                triggerScrollReveals();
+            }, 4800); 
+        }
+
+        // Scroll Reveal Logic
+        function triggerScrollReveals() {
+            const reveals = document.querySelectorAll('.reveal-up');
+            const windowHeight = window.innerHeight;
+            const elementVisible = 50;
+
+            reveals.forEach((reveal) => {
+                const elementTop = reveal.getBoundingClientRect().top;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveal.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', triggerScrollReveals);
+    </script>
+</body>
+</html>
