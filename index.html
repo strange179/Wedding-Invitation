@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sarah & Ahmed | Wedding Invitation</title>
+    <title>Nada & Abdelrahman | Wedding Invitation</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -217,12 +217,7 @@
         <div id="envelope-container" class="envelope-container bg-env-inside">
             
             <!-- Inside back of the envelope -->
-            <div class="absolute inset-0 bg-env-inside flex flex-col items-center justify-start pt-16">
-                <div class="w-[85%] h-[80%] bg-[#FDFBF7] rounded-md shadow-inner border border-white/40 opacity-70 flex flex-col items-center pt-8">
-                    <div class="w-12 h-[1px] bg-wedding-gold mb-2"></div>
-                    <div class="w-8 h-[1px] bg-wedding-gold"></div>
-                </div>
-            </div>
+            <div class="absolute inset-0 bg-black"></div>
 
             <!-- Flaps -->
             <div class="flap flap-left">
@@ -247,7 +242,7 @@
 
             <!-- Red Wax Seal -->
             <div id="wax-seal" class="wax-seal animate-pulse-slow" onclick="openEnvelope()">
-                <div class="wax-seal-text">S<span class="text-[1.3rem] mx-1 font-light italic text-[#E8C88A]/80">&</span>A</div>
+                <div class="wax-seal-text">N<span class="text-[1.3rem] mx-1 font-light italic text-[#E8C88A]/80">&</span>A</div>
             </div>
 
             <!-- Hint text -->
@@ -274,9 +269,9 @@
                 <p class="font-sans text-[11px] tracking-[0.3em] uppercase text-wedding-text mb-5">Together with their families</p>
                 
                 <h1 class="font-serif text-6xl md:text-7xl font-medium text-wedding-dark mb-4 leading-tight">
-                    Sarah <br/>
+                    Nada <br/>
                     <span class="text-wedding-green font-light italic text-4xl block my-2">&</span> 
-                    Ahmed
+                    Abdelrahman
                 </h1>
                 
                 <p class="font-arabic text-xl md:text-2xl text-wedding-text mt-10">نتشرف بدعوتكم لحضور حفل زفافنا</p>
@@ -297,8 +292,8 @@
                 <div class="space-y-8 font-serif">
                     <div>
                         <p class="text-[10px] font-sans tracking-[0.25em] text-wedding-green uppercase mb-3">The Date</p>
-                        <p class="text-[22px] text-wedding-dark">Friday, October 25th, 2026</p>
-                        <p class="font-arabic text-xl text-wedding-text mt-1.5">الجمعة، ٢٥ أكتوبر ٢٠٢٦</p>
+                        <p class="text-[22px] text-wedding-dark">Friday, February 27th, 2025</p>
+                        <p class="font-arabic text-xl text-wedding-text mt-1.5">الجمعة، ٢٧ فبراير ٢٠٢٥</p>
                     </div>
 
                     <div class="w-10 h-[1px] bg-wedding-green/20 mx-auto"></div>
@@ -333,7 +328,7 @@
                     </div>
                 </div>
                 
-                <button onclick="window.open('https://maps.google.com', '_blank')" class="w-full py-4 text-wedding-dark font-sans text-xs tracking-[0.2em] uppercase flex items-center justify-center gap-2 hover:text-wedding-green transition-colors">
+                <button onclick="window.open('https://maps.app.goo.gl/jevaqQ9XuvGK9N5y5', '_blank')" class="w-full py-4 text-wedding-dark font-sans text-xs tracking-[0.2em] uppercase flex items-center justify-center gap-2 hover:text-wedding-green transition-colors">
                 Open in Google Maps
                 <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
             </button>
@@ -360,6 +355,9 @@
 
         // Slow, elegant opening logic
         function openEnvelope() {
+            // Ensure we are at the top of the page
+            window.scrollTo(0, 0);
+            
             const screen = document.getElementById('envelope-screen');
             const seal = document.getElementById('wax-seal');
             const hintText = document.getElementById('hint-text');
@@ -380,9 +378,9 @@
 
             // 3. Subtle hint of opening (lift flap slightly)
             setTimeout(() => {
-                // Just a 35-degree lift + small translation to show depth without opening fully
-                flapTop.style.transform = 'rotateX(35deg) translateY(-3px)';
-                flapTop.style.filter = 'drop-shadow(0 15px 25px rgba(0,0,0,0.4)) brightness(1.05)';
+                // Lift the top flap very slightly with a strong black shadow underneath
+                flapTop.style.transform = 'rotateX(15deg) translateY(-1px)';
+                flapTop.style.filter = 'drop-shadow(0 20px 25px rgba(0,0,0,1)) brightness(1.02)';
             }, 800); 
 
             // 4. Very slow fade out of the whole envelope while the flap is slightly lifted
@@ -393,8 +391,9 @@
                 // Show the main page
                 mainContent.classList.add('visible');
                 
-                // Allow user to scroll
+                // Allow user to scroll and ensure it's at the top
                 document.body.classList.remove('locked');
+                window.scrollTo(0, 0);
             }, 2200);
 
             // 5. Remove from DOM completely
