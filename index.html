@@ -132,8 +132,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 95px;
-            height: 95px;
+            width: 115px;
+            height: 115px;
             background: radial-gradient(circle at 35% 35%, #B22B22, #8C1C13, #5A0A05);
             border-radius: 47% 53% 51% 49% / 51% 47% 53% 49%; 
             box-shadow: 
@@ -162,7 +162,7 @@
             z-index: 2;
             color: #E8C88A; 
             font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
+            font-size: 2.6rem;
             font-weight: 500;
             text-shadow: 
                 -1px -1px 0px rgba(0,0,0,0.5), 
@@ -235,14 +235,19 @@
                 <i data-lucide="heart" class="w-8 h-8 embossed stroke-[1.5]"></i>
             </div>
 
-            <!-- Top Flap (The one that opens) -->
-            <div id="flap-top" class="flap flap-top">
-                <i data-lucide="flower-2" class="absolute top-14 left-1/2 -translate-x-1/2 w-12 h-12 embossed rotate-180 stroke-[1.5]"></i>
-            </div>
+            <!-- Top Flap Wrapper (Lifts both flap and seal together) -->
+            <div id="flap-top-wrapper" class="absolute inset-0 z-[35] pointer-events-none" style="transform-origin: top; transform-style: preserve-3d; transition: transform 1.5s ease;">
+                
+                <!-- Top Flap (The one that opens) -->
+                <div id="flap-top" class="flap flap-top pointer-events-auto">
+                    <i data-lucide="flower-2" class="absolute top-14 left-1/2 -translate-x-1/2 w-12 h-12 embossed rotate-180 stroke-[1.5]"></i>
+                </div>
 
-            <!-- Red Wax Seal -->
-            <div id="wax-seal" class="wax-seal animate-pulse-slow" onclick="openEnvelope()">
-                <div class="wax-seal-text">N<span class="text-[1.3rem] mx-1 font-light italic text-[#E8C88A]/80">&</span>A</div>
+                <!-- Red Wax Seal -->
+                <div id="wax-seal" class="wax-seal animate-pulse-slow pointer-events-auto" onclick="openEnvelope()">
+                    <div class="wax-seal-text">N<span class="text-[1.3rem] mx-1 font-light italic text-[#E8C88A]/80">&</span>A</div>
+                </div>
+
             </div>
 
             <!-- Hint text -->
@@ -363,6 +368,7 @@
             const hintText = document.getElementById('hint-text');
             const mainContent = document.getElementById('main-content');
             const flapTop = document.getElementById('flap-top'); 
+            const flapTopWrapper = document.getElementById('flap-top-wrapper'); 
             
             // Prevent multiple clicks
             seal.style.pointerEvents = 'none';
@@ -371,15 +377,13 @@
             hintText.style.opacity = '0';
             seal.classList.remove('animate-pulse-slow');
 
-            // 2. Slow disappearance of the seal
-            seal.style.transition = 'all 1.5s ease';
-            seal.style.transform = 'translate(-50%, -50%) scale(1.1)';
-            seal.style.opacity = '0';
+            // 2. Add deep shadow to the seal itself
+            seal.style.boxShadow = '0 30px 40px rgba(0,0,0,1), inset 0 3px 5px rgba(255,255,255,0.3), inset 0 -3px 8px rgba(0,0,0,0.5)';
 
             // 3. Subtle hint of opening (lift flap slightly)
             setTimeout(() => {
-                // Lift the top flap very slightly with a strong black shadow underneath
-                flapTop.style.transform = 'rotateX(15deg) translateY(-1px)';
+                // Rotate the wrapper to lift BOTH flap and seal together perfectly
+                flapTopWrapper.style.transform = 'rotateX(15deg) translateY(-1px)';
                 flapTop.style.filter = 'drop-shadow(0 20px 25px rgba(0,0,0,1)) brightness(1.02)';
             }, 800); 
 
